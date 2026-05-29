@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Summarizer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        h1 { font-size: 2rem; margin-bottom: 8px; color: #38bdf8; }
+        p.subtitle { color: #94a3b8; margin-bottom: 32px; }
+        .container { width: 100%; max-width: 800px; }
+        .card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid #334155;
+        }
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        textarea {
+            width: 100%;
+            height: 180px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #e2e8f0;
+            padding: 12px;
+            font-size: 0.95rem;
+            resize: vertical;
+            font-family: inherit;
+        }
+        textarea:focus { outline: none; border-color: #38bdf8; }
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        select {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #e2e8f0;
+            padding: 10px 12px;
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+        select:focus { outline: none; border-color: #38bdf8; }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #38bdf8;
+            color: #0f172a;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: background 0.2s;
+        }
+        button:hover { background: #7dd3fc; }
+        button:disabled {
+            background: #334155;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+        .result-card {
+            display: none;
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #334155;
+        }
+        .result-card.show { display: block; }
+        .result-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #e2e8f0;
+            background: #0f172a;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 3px solid #38bdf8;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .stat {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #38bdf8;
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #38bdf8;
+        }
+        .loading.show { display: block; }
+        .error {
+            display: none;
+            background: #450a0a;
+            border: 1px solid #dc2626;
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #fca5a5;
+            margin-top: 12px;
+        }
+        .error.show { display: block; }
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 12px;
+            background: #0c4a6e;
+            color: #38bdf8;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>📝 Text Summarizer</h1>
+    <p class="subtitle">Paste your long text — get a short summary instantly!</p>
+
+    <div class="container">
+        <div class="card">
+            <label>Paste Your Text Here</label>
+            <textarea id="inputText"
+                placeholder="Paste any long article, news, paragraph here... (minimum 50 characters)"></textarea>
+
+            <div class="options">
+                <div>
+                    <label>Choose Method</label>
+                    <select id="method">
+                        <option value="extractive">Extractive (Fast)</option>
+                        <option value="abstractive">Abstractive (AI)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Length</label>
+                    <select id="length">
+                        <option value="short">Short</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="long">Long</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Sentences</label>
+                    <select id="sentences">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3" selected>3</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+            </div>
+<div style="margin-top:16px;">
+    <label>Or Try a Sample Text</label>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+        <button type="button"
+            onclick="loadSample('news')"
+            style="padding:8px; background:#0f172a; color:#38bdf8;
+                   border:1px solid #334155; border-radius:8px;
+                   cursor:pointer; font-size:0.85rem;">
+            📰 News Article
+        </button>
+        <button type="button"
+            onclick="loadSample('science')"
+            style="padding:8px; background:#0f172a; color:#38bdf8;
+                   border:1px solid #334155; border-radius:8px;
+                   cursor:pointer; font-size:0.85rem;">
+            🔬 Science Text
+        </button>
+        <button type="button"
+            onclick="loadSample('business')"
+            style="padding:8px; background:#0f172a; color:#38bdf8;
+                   border:1px solid #334155; border-radius:8px;
+                   cursor:pointer; font-size:0.85rem;">
+            💼 Business News
+        </button>
+        <button type="button"
+            onclick="loadSample('technology')"
+            style="padding:8px; background:#0f172a; color:#38bdf8;
+                   border:1px solid #334155; border-radius:8px;
+                   cursor:pointer; font-size:0.85rem;">
+            💻 Technology
+        </button>
+    </div>
+</div>
+            <button id="summarizeBtn" onclick="summarize()">
+                ✨ Summarize Now
+            </button>
+            <div class="error" id="errorBox"></div>
+        </div>
+
+        <div class="loading" id="loading">
+            ⏳ Generating summary... please wait!
+        </div>
+
+        <div class="result-card" id="resultCard">
+            <label>📄 Your Summary</label>
+            <div class="result-text" id="summaryText"></div>
+            <span class="badge" id="methodBadge"></span>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="origLen">-</div>
+                    <div class="stat-label">Original Words</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="summLen">-</div>
+                    <div class="stat-label">Summary Words</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="compression">-</div>
+                    <div class="stat-label">Compression %</div>
+                </div>
+            </div>
+            <button onclick="copyText()"
+                style="margin-top:16px;background:#1e293b;color:#38bdf8;border:1px solid #334155;">
+                📋 Copy summary
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const SAMPLES = {
+    news: `The United Nations climate summit concluded with a landmark agreement signed by over 190 countries. World leaders pledged to reduce carbon emissions by 50 percent before 2035. The agreement includes financial support for developing nations transitioning to renewable energy. Environmental groups called it a historic step forward, while some critics argued the targets were still insufficient to prevent dangerous warming. Implementation will be monitored through annual reviews starting next year.`,
+
+    science: `Scientists at MIT have developed a new type of battery that can charge in under five minutes and last for over 20 years. The breakthrough uses a new nanomaterial coating that prevents degradation over repeated charge cycles. Unlike traditional lithium-ion batteries, the new design uses abundant materials that are cheaper and easier to source. Researchers believe this technology could revolutionize electric vehicles and grid-scale energy storage. Clinical trials for commercial applications are expected to begin within two years.`,
+
+    business: `Apple reported record quarterly earnings of 97 billion dollars driven by strong iPhone sales in emerging markets. The company saw a 23 percent year-over-year growth in its services division including the App Store and Apple Music. CEO Tim Cook highlighted India and Southeast Asia as the fastest growing regions for new customers. Despite global supply chain challenges, Apple maintained healthy profit margins through cost optimization strategies. Analysts raised their price targets for Apple stock following the earnings announcement.`,
+
+    technology: `OpenAI released GPT-5, claiming it surpasses human performance on a wide range of professional benchmarks including medical licensing exams and legal bar examinations. The model demonstrates improved reasoning abilities and can now process images, audio, and video simultaneously. OpenAI introduced new safety measures including real-time content moderation and enhanced controls for enterprise users. The release has sparked renewed debate about artificial general intelligence timelines among leading AI researchers. Several major technology companies announced plans to integrate the new model into their products.`
+}
+
+function loadSample(type) {
+    document.getElementById('inputText').value = SAMPLES[type]
+}
+        async function summarize() {
+            const text = document.getElementById('inputText').value.trim()
+            const method = document.getElementById('method').value
+            const length = document.getElementById('length').value
+            const sentences = parseInt(document.getElementById('sentences').value)
+            const btn = document.getElementById('summarizeBtn')
+            const loading = document.getElementById('loading')
+            const resultCard = document.getElementById('resultCard')
+            const errorBox = document.getElementById('errorBox')
+
+            if (!text || text.length < 50) {
+                errorBox.textContent = 'Text is too short! Please enter at least 50 characters.'
+                errorBox.classList.add('show')
+                return
+            }
+
+            errorBox.classList.remove('show')
+            resultCard.classList.remove('show')
+            loading.classList.add('show')
+            btn.disabled = true
+            btn.textContent = '⏳ Processing...'
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/summarize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: text,
+                        method: method,
+                        length: length,
+                        num_sentences: sentences
+                    })
+                })
+                const data = await response.json()
+                if (data.success) {
+                    document.getElementById('summaryText').textContent = data.summary
+                    document.getElementById('origLen').textContent = data.original_length
+                    document.getElementById('summLen').textContent = data.summary_length
+                    document.getElementById('compression').textContent = data.compression_ratio + '%'
+                    document.getElementById('methodBadge').textContent = data.method_used
+                    resultCard.classList.add('show')
+                } else {
+                    throw new Error('API error')
+                }
+            } catch (err) {
+                errorBox.textContent = 'Error occurred! Is the server running? Check your terminal.'
+                errorBox.classList.add('show')
+            } finally {
+                loading.classList.remove('show')
+                btn.disabled = false
+                btn.textContent = '✨ Summarize Karo'
+            }
+        }
+
+        function copyText() {
+            const text = document.getElementById('summaryText').textContent
+            navigator.clipboard.writeText(text)
+            alert('Summary copied to clipboard!')
+        }
+    </script>
+</body>
+</html>
