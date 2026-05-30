@@ -11,7 +11,7 @@ pytesseract
 Pillow
 psutil
 pandas
-torch
+torch==2.1.0
 transformers==4.35.2
 tokenizers==0.14.1
 sentencepiece
