@@ -5,7 +5,7 @@ pydantic-settings
 python-multipart
 httpx
 beautifulsoup4
-streamlit
+streamlit==1.28.0
 opencv-python-headless
 pytesseract
 Pillow
