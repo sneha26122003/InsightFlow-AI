@@ -177,7 +177,7 @@ with tab1:
 
 with tab2:
     st.subheader("🖼️ Upload Image")
-    st.caption("OpenCV image process karta hai, Tesseract text extract karta hai!")
+    st.caption("OpenCV processes the image, Tesseract extracts text, AI summarizes!")
     uploaded = st.file_uploader(
         "Upload Image",
         type=["png", "jpg", "jpeg", "webp"]
@@ -191,8 +191,8 @@ with tab2:
             os.path.exists(r'C:\Program Files\Tesseract-OCR\tesseract.exe')
         )
         if not tesseract_ok:
-            st.warning("Tesseract not available on server.")
-            st.info("Use Text Input tab for summarization!")
+            st.warning("Tesseract not available on server — installing via build command.")
+            st.info("Please use Text Input tab for now. Image support coming soon!")
         else:
             with st.spinner("Processing image..."):
                 try:

@@ -1,11 +1,9 @@
-Requirement already satisfied: pytesseract in c:\users\g k\desktop\text-summarizer\venv\lib\site-packages (0.3.13)
-Requirement already satisfied: Pillow in c:\users\g k\desktop\text-summarizer\venv\lib\site-packages (12.2.0)
 services:
   - type: web
-    name: TextGist-AI
+    name: InsightFlow-AI-Streamlit
     runtime: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: streamlit run app_streamlit.py --server.port $PORT --server.address 0.0.0.0
+    buildCommand: apt-get install -y tesseract-ocr && pip install -r requirements.txt
+    startCommand: streamlit run app_streamlit.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
