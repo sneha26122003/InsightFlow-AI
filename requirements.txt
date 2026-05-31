@@ -1,3 +1,9 @@
+torch==2.1.0
+transformers==4.35.2
+tokenizers==0.14.1
+sentencepiece==0.1.99
+accelerate==0.24.0
+huggingface_hub==0.17.3
 fastapi
 uvicorn[standard]
 pydantic
@@ -11,11 +17,5 @@ pytesseract
 Pillow
 psutil
 pandas
-huggingface_hub==0.17.3
-torch==2.1.0
-transformers==4.35.2
-tokenizers==0.14.1
-sentencepiece==0.1.99
-accelerate==0.24.0
 pytest
 pytest-asyncio
