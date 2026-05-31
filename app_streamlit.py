@@ -10,7 +10,7 @@ import platform
 import psutil
 import time
 from src.models.summarizer import ExtractiveSummarizer, TextSummarizer
-
+os.system("apt-get install -y tesseract-ocr 2>/dev/null || true")
 tesseract_path = shutil.which("tesseract")
 if tesseract_path:
     pytesseract.pytesseract.tesseract_cmd = tesseract_path
@@ -97,8 +97,8 @@ SAMPLES = {
     "Business News": """Apple reported record quarterly earnings of 97 billion dollars driven by strong iPhone sales in emerging markets. The company saw a 23 percent year-over-year growth in its services division. CEO Tim Cook highlighted India and Southeast Asia as the fastest growing regions. Despite global supply chain challenges, Apple maintained healthy profit margins through cost optimization strategies. Analysts raised their price targets for Apple stock following the earnings announcement.""",
 }
 
-st.title("📝 TextGist AI")
-st.markdown("**AI-powered Text Summarizer** — Text aur Images support karta hai!")
+st.title("📝 Insight-Flow AI")
+st.markdown("**AI-powered Text Summarizer** — Supports Text and Image Input!")
 st.divider()
 
 with st.sidebar:
